@@ -19,9 +19,10 @@ Requirements:
 import argparse
 import os
 import sys
+import re
 import polib
 import deepl
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 
 class DeepLTranslator:
@@ -36,9 +37,67 @@ class DeepLTranslator:
         """
         self.translator = deepl.Translator(api_key)
 
+    def _extract_format_placeholders(self, text: str) -> Tuple[str, Dict[str, str]]:
+        """
+        Extract format placeholders from text to prevent them from being translated.
+
+        Handles both {variable} format and %(variable)s format.
+
+        Args:
+            text: Text that may contain format placeholders
+
+        Returns:
+            Tuple containing:
+                - Text with placeholders replaced by unique markers
+                - Dictionary mapping markers back to original placeholders
+        """
+        # Dictionary to store placeholders and their replacements
+        placeholders = {}
+
+        # Process {variable} format (Python format and f-strings)
+        brace_pattern = r'(\{[^{}]*\})'
+        brace_matches = re.finditer(brace_pattern, text)
+
+        processed_text = text
+        for i, match in enumerate(brace_matches):
+            placeholder = match.group(0)
+            marker = f"__FORMAT_BRACE_{i}__"
+            placeholders[marker] = placeholder
+            processed_text = processed_text.replace(placeholder, marker, 1)
+
+        # Process %(variable)s format (old-style Python formatting)
+        percent_pattern = r'(%\([^()]*\)[diouxXeEfFgGcrs])'
+        percent_matches = re.finditer(percent_pattern, processed_text)
+
+        for i, match in enumerate(percent_matches):
+            placeholder = match.group(0)
+            marker = f"__FORMAT_PERCENT_{i}__"
+            placeholders[marker] = placeholder
+            processed_text = processed_text.replace(placeholder, marker, 1)
+
+        return processed_text, placeholders
+
+    def _restore_format_placeholders(self, text: str, placeholders: Dict[str, str]) -> str:
+        """
+        Restore format placeholders in translated text.
+
+        Args:
+            text: Translated text with placeholder markers
+            placeholders: Dictionary mapping markers to original placeholders
+
+        Returns:
+            Text with original placeholders restored
+        """
+        result = text
+        for marker, placeholder in placeholders.items():
+            result = result.replace(marker, placeholder)
+        return result
+
     def translate_text(self, text: str, source_lang: str, target_lang: str) -> Optional[str]:
         """
         Translate a single text using DeepL API.
+
+        Preserves format placeholders like {variable} and %(variable)s during translation.
 
         Args:
             text: Text to translate
@@ -52,12 +111,20 @@ class DeepLTranslator:
             return text
 
         try:
+            # Extract format placeholders before translation
+            processed_text, placeholders = self._extract_format_placeholders(text)
+
+            # Translate the text with placeholders replaced by markers
             result = self.translator.translate_text(
-                text, 
+                processed_text, 
                 source_lang=source_lang, 
                 target_lang=target_lang
             )
-            return result.text
+
+            # Restore the original placeholders in the translated text
+            translated_text = self._restore_format_placeholders(result.text, placeholders)
+
+            return translated_text
         except Exception as e:
             print(f"Error translating text: {e}", file=sys.stderr)
             return None
@@ -65,6 +132,8 @@ class DeepLTranslator:
     def translate_batch(self, texts: List[str], source_lang: str, target_lang: str) -> List[Optional[str]]:
         """
         Translate a batch of texts using DeepL API.
+
+        Preserves format placeholders like {variable} and %(variable)s during translation.
 
         Args:
             texts: List of texts to translate
@@ -82,16 +151,29 @@ class DeepLTranslator:
             return texts
 
         try:
+            # Process each text to extract format placeholders
+            processed_texts = []
+            placeholders_list = []
+
+            for text in non_empty_texts:
+                processed_text, placeholders = self._extract_format_placeholders(text)
+                processed_texts.append(processed_text)
+                placeholders_list.append(placeholders)
+
+            # Translate the processed texts
             results = self.translator.translate_text(
-                non_empty_texts,
+                processed_texts,
                 source_lang=source_lang,
                 target_lang=target_lang
             )
 
             # Create a result list with the same size as the input
             translated_texts = texts.copy()
-            for idx, result in zip(non_empty_indices, results):
-                translated_texts[idx] = result.text
+
+            # Restore placeholders in each translated text
+            for i, (idx, result) in enumerate(zip(non_empty_indices, results)):
+                translated_text = self._restore_format_placeholders(result.text, placeholders_list[i])
+                translated_texts[idx] = translated_text
 
             return translated_texts
         except Exception as e:

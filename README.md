@@ -9,6 +9,7 @@ A Python script to translate PO (Portable Object) files generated in Django proj
 - Command-line interface for easy integration into workflows
 - Preserves PO file structure and metadata
 - Skips already translated entries to save API calls
+- Preserves formatted strings like `{variable}` and `%(variable)s` during translation
 
 ## Requirements
 
@@ -152,6 +153,29 @@ For a complete list of supported languages, refer to the [DeepL API documentatio
 - The script currently skips entries with plural forms, which require more complex handling
 - DeepL API has usage limits depending on your subscription plan
 - Some context-specific translations might need manual review
+
+## Handling Formatted Strings
+
+The translator automatically preserves formatted strings during translation. This is important for strings that contain placeholders that will be replaced with actual values at runtime.
+
+### Supported Format Types
+
+- Python brace format: `"Hello {name}, welcome to {place}!"`
+- Python percent format: `"Hello %(name)s, your score is %(score)d!"`
+
+These placeholders are identified and protected during the translation process, ensuring they remain unchanged in the translated text. This prevents issues that would occur if the placeholders were translated.
+
+### Example
+
+Original string:
+```
+"User {username} has {count} messages"
+```
+
+Translated to German (with placeholders preserved):
+```
+"Benutzer {username} hat {count} Nachrichten"
+```
 
 ## License
 
