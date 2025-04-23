@@ -1,2 +1,4 @@
 polib>=1.1.0
 deepl>=1.14.0
+pytest>=7.0.0
+pytest-mock>=3.10.0

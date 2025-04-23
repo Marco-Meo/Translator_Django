@@ -160,3 +160,49 @@ MIT License
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Testing
+
+The project includes a comprehensive test suite using pytest. The tests cover all major components of the script:
+
+- DeepLTranslator class
+- POFileTranslator class
+- Command-line interface
+
+### Installing Test Dependencies
+
+To install the required testing dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Or install them directly:
+
+```bash
+pip install pytest pytest-mock
+```
+
+### Running Tests
+
+To run the tests:
+
+```bash
+pytest
+```
+
+For more verbose output:
+
+```bash
+pytest -v
+```
+
+To run a specific test file:
+
+```bash
+pytest tests/test_deepl_translator.py
+```
+
+### Test Coverage
+
+The tests use mocking to avoid making actual API calls to DeepL, so you can run them without a valid API key.
