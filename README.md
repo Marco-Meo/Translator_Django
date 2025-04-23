@@ -25,8 +25,8 @@ A Python script to translate PO (Portable Object) files generated in Django proj
 1. Clone this repository or download the script:
 
 ```bash
-git clone https://github.com/marco-meo/translator-django.git
-cd translator-django
+git https://github.com/Marco-Meo/Translator_Django.git
+cd Translator_Django
 ```
 
 2. Install the package and its dependencies:
