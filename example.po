@@ -1,0 +1,70 @@
+# Translation of Django Project.
+# Copyright (C) 2023
+# This file is distributed under the same license as the Django package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Django\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-04-22 12:00+0000\n"
+"PO-Revision-Date: 2023-04-22 12:00+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: example/views.py:10
+msgid "Welcome to our website"
+msgstr ""
+
+#: example/views.py:15
+msgid "Please log in to continue"
+msgstr ""
+
+#: example/views.py:20
+msgid "Your account has been created successfully"
+msgstr ""
+
+#: example/models.py:25
+msgid "Username"
+msgstr ""
+
+#: example/models.py:26
+msgid "Email address"
+msgstr ""
+
+#: example/models.py:30
+msgid "First name"
+msgstr ""
+
+#: example/models.py:31
+msgid "Last name"
+msgstr ""
+
+#: example/templates/home.html:5
+msgid "Home"
+msgstr ""
+
+#: example/templates/home.html:10
+msgid "About us"
+msgstr ""
+
+#: example/templates/home.html:15
+msgid "Contact"
+msgstr ""
+
+#: example/templates/login.html:5
+msgid "Login"
+msgstr ""
+
+#: example/templates/login.html:10
+msgid "Forgot password?"
+msgstr ""
+
+#: example/templates/login.html:15
+msgid "Register"
+msgstr ""
